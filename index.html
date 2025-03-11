@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Diagnosis Assistant</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+        
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        .symptoms-input {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        #symptoms {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        #diagnosisResult {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .result-section {
+            margin-bottom: 20px;
+        }
+        
+        .result-section h3 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .precaution-item, .medication-item, .diet-item {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .example-symptoms {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .example-tag {
+            background-color: #e1f0fa;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .example-tag:hover {
+            background-color: #c5e2f6;
+        }
+        
+        .instructions {
+            background-color: #e1f0fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Medical Diagnosis Assistant</h1>
+        <p>Enter your symptoms to get a possible diagnosis and recommendations</p>
+    </div>
+    
+    <div class="container">
+        <div class="instructions">
+            <p><strong>How to use:</strong> Enter your symptoms separated by commas (e.g., "fever, headache, cough")</p>
+        </div>
+        
+        <div class="input-section">
+            <label for="symptoms"><strong>Your Symptoms:</strong></label>
+            <div class="symptoms-input">
+                <input type="text" id="symptoms" placeholder="e.g., fever, headache, fatigue">
+            </div>
+            
+            <div>
+                <p><small>Example symptoms you can try:</small></p>
+                <div class="example-symptoms">
+                    <span class="example-tag" onclick="fillExample('chest pain, cough, fatigue, high fever')">chest pain, cough, fatigue, high fever</span>
+                    <span class="example-tag" onclick="fillExample('headache, nausea, vomiting')">headache, nausea, vomiting</span>
+                    <span class="example-tag" onclick="fillExample('skin rash, stomach pain, joint pain')">skin rash, stomach pain, joint pain</span>
+                </div>
+            </div>
+            
+            <button onclick="diagnose()">Get Diagnosis</button>
+        </div>
+        
+        <div class="loader" id="loader"></div>
+        <div class="error-message" id="errorMessage"></div>
+        
+        <div id="diagnosisResult">
+            <div class="result-section">
+                <h2 id="diseaseName"></h2>
+                <p id="diseaseDescription"></p>
+            </div>
+            
+            <div class="result-section">
+                <h3>Precautions</h3>
+                <div id="precautions"></div>
+            </div>
+            
+            <div class="result-section">
+                <h3>Recommended Medications</h3>
+                <div id="medications"></div>
+            </div>
+            
+            <div class="result-section">
+                <h3>Dietary Recommendations</h3>
+                <div id="diet"></div>
+            </div>
+            
+            <div class="result-section">
+                <h3>Exercise Recommendations</h3>
+                <div id="workout"></div>
+            </div>
+            
+            <p><strong>Disclaimer:</strong> This is a prototype tool for educational purposes only. Always consult with a healthcare professional for medical advice.</p>
+        </div>
+    </div>
+    
+    <script>
+        function fillExample(symptoms) {
+            document.getElementById('symptoms').value = symptoms;
+        }
+        
+        function diagnose() {
+            const symptoms = document.getElementById('symptoms').value.trim();
+            
+            if (!symptoms) {
+                alert('Please enter your symptoms');
+                return;
+            }
+            
+            // Show loader, hide results and previous errors
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('diagnosisResult').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            // Send the symptoms to the API for prediction
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    symptoms: symptoms
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Successfully received data from the API
+                displayResults(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError(`Failed to get prediction: ${error.message}. Make sure the Flask API is running.`);
+            })
+            .finally(() => {
+                // Hide loader
+                document.getElementById('loader').style.display = 'none';
+            });
+        }
+        
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        function displayResults(data) {
+            // Check if we received valid data from the API
+            if (!data) {
+                showError('Received empty response from server');
+                return;
+            }
+            
+            document.getElementById('diseaseName').textContent = data.disease || 'Unknown';
+            document.getElementById('diseaseDescription').textContent = data.description || 'No description available';
+            
+            const precautionsEl = document.getElementById('precautions');
+            precautionsEl.innerHTML = '';
+            if (data.precautions && data.precautions.length) {
+                data.precautions.forEach(item => {
+                    if (item && item.trim()) {
+                        const div = document.createElement('div');
+                        div.className = 'precaution-item';
+                        div.textContent = item;
+                        precautionsEl.appendChild(div);
+                    }
+                });
+            } else {
+                precautionsEl.textContent = 'No specific precautions available';
+            }
+            
+            const medicationsEl = document.getElementById('medications');
+            medicationsEl.innerHTML = '';
+            if (data.medications && data.medications.length) {
+                data.medications.forEach(item => {
+                    if (item && item.trim()) {
+                        const div = document.createElement('div');
+                        div.className = 'medication-item';
+                        div.textContent = item;
+                        medicationsEl.appendChild(div);
+                    }
+                });
+            } else {
+                medicationsEl.textContent = 'No specific medications available';
+            }
+            
+            const dietEl = document.getElementById('diet');
+            dietEl.innerHTML = '';
+            if (data.diet && data.diet.length) {
+                data.diet.forEach(item => {
+                    if (item && item.trim()) {
+                        const div = document.createElement('div');
+                        div.className = 'diet-item';
+                        div.textContent = item;
+                        dietEl.appendChild(div);
+                    }
+                });
+            } else {
+                dietEl.textContent = 'No specific dietary recommendations available';
+            }
+            
+            const workoutEl = document.getElementById('workout');
+            workoutEl.innerHTML = '';
+            if (data.workout && data.workout.length) {
+                data.workout.forEach(item => {
+                    if (item && item.trim()) {
+                        const div = document.createElement('div');
+                        div.className = 'diet-item';
+                        div.textContent = item;
+                        workoutEl.appendChild(div);
+                    }
+                });
+            } else {
+                workoutEl.textContent = 'No specific exercise recommendations available';
+            }
+            
+            document.getElementById('diagnosisResult').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
