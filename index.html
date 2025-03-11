@@ -5,93 +5,219 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical Diagnosis Assistant</title>
     <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --primary-dark: #3f37c9;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --radius: 8px;
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--font-sans);
             line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f8f9fa;
+            color: var(--gray-800);
+            background-color: #f5f7fa;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 2rem 1rem;
         }
         
         .container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            margin-bottom: 20px;
+            max-width: 800px;
+            margin: 0 auto;
         }
         
-        h1, h2, h3 {
-            color: #2c3e50;
+        .card {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border-top: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg), 0 0 0 3px rgba(67, 97, 238, 0.1);
         }
         
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 2rem;
+            padding: 1rem;
         }
         
         .header h1 {
-            margin-bottom: 10px;
-            color: #3498db;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+            font-size: 2.25rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .header p {
+            color: var(--gray-600);
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto;
         }
         
         .input-section {
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+            font-weight: 600;
         }
         
         .symptoms-input {
             display: flex;
-            margin-bottom: 15px;
+            margin-bottom: 1rem;
+            position: relative;
         }
         
         #symptoms {
             flex-grow: 1;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            color: var(--gray-800);
+            transition: var(--transition);
+            width: 100%;
+        }
+        
+        #symptoms:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
         }
         
         button {
-            background-color: #3498db;
+            background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 4px;
-            padding: 12px 20px;
+            border-radius: var(--radius);
+            padding: 0.875rem 1.5rem;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
         }
         
         button:hover {
-            background-color: #2980b9;
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        button:active {
+            transform: translateY(1px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .instructions {
+            background-color: rgba(67, 97, 238, 0.08);
+            padding: 1.25rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .instructions p {
+            margin: 0;
+            color: var(--gray-700);
+        }
+
+        .instructions strong {
+            color: var(--primary-dark);
         }
         
         #diagnosisResult {
             display: none;
-            margin-top: 20px;
+            margin-top: 1.5rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .result-section {
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .result-section h2 {
+            color: var(--primary);
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
         }
         
         .result-section h3 {
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 5px;
-            margin-bottom: 15px;
+            color: var(--gray-800);
+            font-size: 1.25rem;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .result-section h3:before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 20px;
+            background-color: var(--primary);
+            margin-right: 8px;
+            border-radius: 4px;
         }
         
         .loader {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
+            border: 3px solid var(--gray-200);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
-            margin: 20px auto;
+            margin: 1.5rem auto;
             display: none;
         }
         
@@ -101,109 +227,165 @@
         }
         
         .precaution-item, .medication-item, .diet-item {
-            background-color: #f8f9fa;
-            padding: 10px 15px;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            border-left: 3px solid #3498db;
+            background-color: var(--gray-100);
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.625rem;
+            border-radius: var(--radius);
+            border-left: 3px solid var(--primary);
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .precaution-item:hover, .medication-item:hover, .diet-item:hover {
+            transform: translateX(3px);
+            background-color: rgba(67, 97, 238, 0.05);
+            box-shadow: var(--shadow-md);
         }
         
         .example-symptoms {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
         }
         
         .example-tag {
-            background-color: #e1f0fa;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 14px;
+            background-color: rgba(67, 97, 238, 0.1);
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: var(--transition);
+            color: var(--primary-dark);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid rgba(67, 97, 238, 0.2);
         }
         
         .example-tag:hover {
-            background-color: #c5e2f6;
+            background-color: rgba(67, 97, 238, 0.15);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
         }
-        
-        .instructions {
-            background-color: #e1f0fa;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
+
+        .example-tag:active {
+            transform: translateY(1px);
         }
         
         .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 15px;
+            background-color: rgba(248, 113, 113, 0.1);
+            color: var(--danger);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-top: 1rem;
             display: none;
+            border-left: 3px solid var(--danger);
+            font-weight: 500;
+        }
+
+        .disclaimer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            padding: 1rem;
+            background-color: var(--gray-100);
+            border-radius: var(--radius);
+        }
+
+        .disclaimer strong {
+            color: var(--gray-700);
+        }
+
+        /* Icon styles */
+        .icon {
+            display: inline-block;
+            margin-right: 0.5rem;
+            color: var(--primary);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Medical Diagnosis Assistant</h1>
-        <p>Enter your symptoms to get a possible diagnosis and recommendations</p>
-    </div>
-    
     <div class="container">
-        <div class="instructions">
-            <p><strong>How to use:</strong> Enter your symptoms separated by commas (e.g., "fever, headache, cough")</p>
-        </div>
+        <header class="header">
+            <h1>Medical Diagnosis Assistant</h1>
+            <p>Enter your symptoms to get a possible diagnosis and personalized health recommendations</p>
+        </header>
         
-        <div class="input-section">
-            <label for="symptoms"><strong>Your Symptoms:</strong></label>
-            <div class="symptoms-input">
-                <input type="text" id="symptoms" placeholder="e.g., fever, headache, fatigue">
+        <div class="card">
+            <div class="instructions">
+                <p><strong>How to use:</strong> Enter your symptoms separated by commas (e.g., "fever, headache, cough") and click the button to analyze.</p>
             </div>
             
-            <div>
-                <p><small>Example symptoms you can try:</small></p>
-                <div class="example-symptoms">
-                    <span class="example-tag" onclick="fillExample('chest pain, cough, fatigue, high fever')">chest pain, cough, fatigue, high fever</span>
-                    <span class="example-tag" onclick="fillExample('headache, nausea, vomiting')">headache, nausea, vomiting</span>
-                    <span class="example-tag" onclick="fillExample('skin rash, stomach pain, joint pain')">skin rash, stomach pain, joint pain</span>
+            <div class="input-section">
+                <label for="symptoms">Your Symptoms:</label>
+                <div class="symptoms-input">
+                    <input type="text" id="symptoms" placeholder="e.g., fever, headache, fatigue">
+                </div>
+                
+                <div>
+                    <p style="color: var(--gray-600); font-size: 0.875rem; margin-top: 0.5rem;">Example symptoms you can try:</p>
+                    <div class="example-symptoms">
+                        <span class="example-tag" onclick="fillExample('chest pain, cough, fatigue, high fever')">chest pain, cough, fatigue, high fever</span>
+                        <span class="example-tag" onclick="fillExample('headache, nausea, vomiting')">headache, nausea, vomiting</span>
+                        <span class="example-tag" onclick="fillExample('skin rash, stomach pain, joint pain')">skin rash, stomach pain, joint pain</span>
+                    </div>
+                </div>
+                
+                <button onclick="diagnose()" style="margin-top: 1.5rem; width: 100%;">
+                    Get Diagnosis
+                </button>
+            </div>
+            
+            <div class="loader" id="loader"></div>
+            <div class="error-message" id="errorMessage"></div>
+            
+            <div id="diagnosisResult">
+                <div class="result-section">
+                    <h2 id="diseaseName"></h2>
+                    <p id="diseaseDescription" style="color: var(--gray-700); margin-bottom: 1.5rem;"></p>
+                </div>
+                
+                <div class="result-section">
+                    <h3>Precautions</h3>
+                    <div id="precautions"></div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>Recommended Medications</h3>
+                    <div id="medications"></div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>Dietary Recommendations</h3>
+                    <div id="diet"></div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>Exercise Recommendations</h3>
+                    <div id="workout"></div>
                 </div>
             </div>
-            
-            <button onclick="diagnose()">Get Diagnosis</button>
         </div>
         
-        <div class="loader" id="loader"></div>
-        <div class="error-message" id="errorMessage"></div>
-        
-        <div id="diagnosisResult">
-            <div class="result-section">
-                <h2 id="diseaseName"></h2>
-                <p id="diseaseDescription"></p>
-            </div>
-            
-            <div class="result-section">
-                <h3>Precautions</h3>
-                <div id="precautions"></div>
-            </div>
-            
-            <div class="result-section">
-                <h3>Recommended Medications</h3>
-                <div id="medications"></div>
-            </div>
-            
-            <div class="result-section">
-                <h3>Dietary Recommendations</h3>
-                <div id="diet"></div>
-            </div>
-            
-            <div class="result-section">
-                <h3>Exercise Recommendations</h3>
-                <div id="workout"></div>
-            </div>
-            
-            <p><strong>Disclaimer:</strong> This is a prototype tool for educational purposes only. Always consult with a healthcare professional for medical advice.</p>
+        <div class="disclaimer">
+            <strong>Disclaimer:</strong> This is a prototype tool for educational purposes only. Always consult with a qualified healthcare professional for medical advice.
         </div>
     </div>
     
